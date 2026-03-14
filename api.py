@@ -51,13 +51,12 @@ You can help users manage their tasks and interact with the Nudge API.
 
 Available capabilities:
 - Task management (create, read, update, delete tasks)
-- Task filtering and searching
-- Health checks
+- Task filtering and searchin
 
 Important notes:
 - Task categories: ACTION, ANCHOR, TRANSIT
 - Task statuses: CREATED, COMPLETED, FAILED, DEFERRED
-- Times are in minutes from midnight (e.g., 540 = 9:00 AM)
+- Times are in minutes from midnight (e.g., 540 = 9:00 AM) in integer format
 
 Always be helpful and guide users through their task management needs.""",
             tools=nudge_registry.get_tool_definitions(),

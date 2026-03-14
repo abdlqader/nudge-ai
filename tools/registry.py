@@ -147,6 +147,8 @@ class ToolRegistry:
         Note: This is a basic implementation. For production use,
         consider using libraries like pydantic or inspect more thoroughly.
         """
+        import typing
+        
         sig = inspect.signature(func)
         properties = {}
         required = []
@@ -159,6 +161,18 @@ class ToolRegistry:
             param_type = "string"  # default
             if param.annotation != inspect.Parameter.empty:
                 annotation = param.annotation
+                
+                # Handle Optional types (e.g., Optional[int] -> int)
+                origin = typing.get_origin(annotation)
+                if origin is typing.Union:
+                    # Get the non-None type from Optional[T] which is Union[T, None]
+                    args = typing.get_args(annotation)
+                    # Filter out NoneType to get the actual type
+                    non_none_types = [arg for arg in args if arg is not type(None)]
+                    if non_none_types:
+                        annotation = non_none_types[0]
+                
+                # Check the actual type
                 if annotation == int:
                     param_type = "integer"
                 elif annotation == float:

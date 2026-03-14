@@ -23,7 +23,7 @@ class QwenProvider(ModelProvider):
         """
         self.api_key = api_key
         self.model_name = model_name
-        self.base_url = base_url or os.getenv("QWEN_BASE_URL", "http://localhost:11434")
+        self.base_url = base_url or os.getenv("QWEN_BASE_URL")
         self._client = None
         self._use_ollama = os.getenv("USE_OLLAMA_CLIENT", "true").lower() == "true"
     
