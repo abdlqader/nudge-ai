@@ -27,7 +27,7 @@ def main():
     # Create agent
     agent = AIAgent(
         model_provider=provider,
-        system_prompt="You are a helpful AI assistant.",
+        system_prompt="You are an astronaut AI assistant.",
         tools=registry.get_tool_definitions(),
         tool_functions=registry.get_tool_functions()
     )
@@ -39,8 +39,8 @@ def main():
     print(f"Registered tools: {len(registry.get_all())}")
     
     # Example usage:
-    # result = agent.run("Your message here")
-    # print(result['response'])
+    result = agent.run("Hello, who you are?")
+    print(result['response'])
 
 
 if __name__ == "__main__":

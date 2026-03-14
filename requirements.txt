@@ -4,3 +4,6 @@ openai>=1.0.0
 
 # Optional but recommended
 python-dotenv>=1.0.0
+
+# For native Ollama support (recommended for local Qwen)
+ollama>=0.1.0

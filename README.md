@@ -107,7 +107,8 @@ api_key = os.getenv("API_KEY")
 if model_provider == "gemini":
     provider = GeminiProvider(api_key=api_key, model_name=model_name)
 elif model_provider == "qwen":
-    provider = QwenProvider(api_key=api_key, model_name=model_name)
+    base_url = os.getenv("QWEN_BASE_URL")
+    provider = QwenProvider(api_key=api_key, model_name=model_name, base_url=base_url)
 ```
 
 ### 2. Define Tools (Structured System)
@@ -171,7 +172,11 @@ result = agent.run("What's the weather in New York?")
 print(result['response'])
 
 # Switch to a different model by creating a new provider
-new_provider = QwenProvider(api_key=qwen_api_key, model_name="qwen-turbo")
+# For local Qwen, specify base_url
+new_provider = QwenProvider(
+    model_name="qwen-turbo",
+    base_url="http://192.168.1.200:11434"  # Or use QWEN_BASE_URL env var
+)
 agent.switch_model(new_provider)
 
 # Continue conversation
@@ -218,14 +223,17 @@ GeminiProvider(
 
 ### QwenProvider
 
-Provider for Alibaba Qwen models.
+Provider for Alibaba Qwen models (supports cloud and local deployment).
 
 ```python
 QwenProvider(
-    api_key: str,
-    model_name: str = "qwen-turbo"
+    api_key: Optional[str] = None,  # Optional for local deployment
+    model_name: str = "qwen-turbo",
+    base_url: Optional[str] = None  # Reads from QWEN_BASE_URL env var
 )
 ```
+
+**Local Deployment**: When running Qwen on your local network, set `QWEN_BASE_URL` in your `.env` file. API key is optional for local setups.
 
 ## Advanced Usage
 
@@ -260,11 +268,15 @@ Configuration is managed through a `.env` file:
 # Required
 MODEL_PROVIDER=gemini          # 'gemini' or 'qwen'
 MODEL_NAME=gemini-pro          # Model variant
-API_KEY=your-api-key-here      # Your API key
+API_KEY=your-api-key-here      # Your API key (not required for local Qwen)
 
 # Optional: Separate keys for each provider
 GEMINI_API_KEY=your-gemini-key
-QWEN_API_KEY=your-qwen-key
+QWEN_API_KEY=your-qwen-key     # Optional for local Qwen
+
+# Qwen Local Deployment (OpenAI-compatible endpoint)
+# Example: http://192.168.1.200:11434
+QWEN_BASE_URL=http://localhost:11434
 ```
 
 The `.env` file is automatically loaded by the example script. For custom scripts:

@@ -30,9 +30,10 @@ def get_provider():
         if model_provider == "gemini":
             api_key = os.getenv("GEMINI_API_KEY")
         elif model_provider == "qwen":
-            api_key = os.getenv("QWEN_API_KEY")
+            api_key = os.getenv("QWEN_API_KEY")  # Optional for local Qwen
     
-    if not api_key:
+    # Qwen doesn't require an API key for local deployment
+    if not api_key and model_provider != "qwen":
         raise ValueError(
             f"No API key found. Please set API_KEY or {model_provider.upper()}_API_KEY in your .env file"
         )
@@ -50,7 +51,8 @@ def get_provider():
     if model_provider == "gemini":
         return GeminiProvider(api_key=api_key, model_name=model_name)
     elif model_provider == "qwen":
-        return QwenProvider(api_key=api_key, model_name=model_name)
+        base_url = os.getenv("QWEN_BASE_URL")
+        return QwenProvider(api_key=api_key, model_name=model_name, base_url=base_url)
     else:
         raise ValueError(f"Unknown MODEL_PROVIDER: {model_provider}. Use 'gemini' or 'qwen'")
 
