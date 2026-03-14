@@ -1,0 +1,651 @@
+{
+	"info": {
+		"_postman_id": "nudge-ai-agent-collection",
+		"name": "Nudge AI Agent API",
+		"description": "AI-powered assistant for Nudge task management. Authentication is handled externally via Nudge API - login there first and use the token in Authorization header.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "External Auth (Nudge API)",
+			"item": [
+				{
+					"name": "Login to Nudge API",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Automatically save token to collection variable",
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    pm.collectionVariables.set(\"auth_token\", jsonData.token);",
+									"    console.log(\"Token saved: \" + jsonData.token.substring(0, 30) + \"...\");",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"admin@mk.com\",\n  \"password\": \"Testing123\"\n}"
+						},
+						"url": {
+							"raw": "{{nudge_api_url}}/auth/login",
+							"host": [
+								"{{nudge_api_url}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						},
+						"description": "Login to Nudge API to get JWT token. Token is automatically saved to collection variable 'auth_token' and used in subsequent AI Agent requests."
+					},
+					"response": [
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"email\": \"admin@mk.com\",\n  \"password\": \"Testing123\"\n}"
+								},
+								"url": {
+									"raw": "{{nudge_api_url}}/auth/login",
+									"host": [
+										"{{nudge_api_url}}"
+									],
+									"path": [
+										"auth",
+										"login"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MTA0MjY0MDAsImlhdCI6MTcxMDM0MDAwMCwidXNlcl9pZCI6IjEyM2U0NTY3LWU4OWItMTJkMy1hNDU2LTQyNjYxNDE3NDAwMCJ9.signature\",\n  \"user\": {\n    \"id\": \"123e4567-e89b-12d3-a456-426614174000\",\n    \"email\": \"admin@mk.com\",\n    \"first_name\": \"Mo\",\n    \"last_name\": \"Ka\"\n  }\n}"
+						}
+					]
+				},
+				{
+					"name": "Register User (Nudge API)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"newuser@example.com\",\n  \"password\": \"password123\",\n  \"first_name\": \"John\",\n  \"last_name\": \"Doe\"\n}"
+						},
+						"url": {
+							"raw": "{{nudge_api_url}}/auth/register",
+							"host": [
+								"{{nudge_api_url}}"
+							],
+							"path": [
+								"auth",
+								"register"
+							]
+						},
+						"description": "Register a new user in the Nudge system. After registration, use Login to get a token."
+					},
+					"response": []
+				}
+			],
+			"description": "Authentication endpoints from Nudge API. Login here first to get a token for AI Agent requests."
+		},
+		{
+			"name": "AI Agent",
+			"item": [
+				{
+					"name": "Health Check",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/health",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"health"
+							]
+						},
+						"description": "Check if the AI Agent API is running. No authentication required."
+					},
+					"response": [
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/health",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"health"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"status\": \"ok\",\n  \"service\": \"nudge-ai-agent\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Agent Status",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/agent/status",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"agent",
+								"status"
+							]
+						},
+						"description": "Get AI agent configuration and available tools. No authentication required."
+					},
+					"response": [
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/agent/status",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"agent",
+										"status"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"agent\": {\n    \"provider\": \"QwenProvider\",\n    \"model\": \"qwen3:8b\",\n    \"tools_count\": 6,\n    \"available_tools\": [\n      \"create_task\",\n      \"get_all_tasks\",\n      \"get_task_by_id\",\n      \"update_task\",\n      \"delete_task\",\n      \"health_check\"\n    ]\n  },\n  \"nudge_api_url\": \"http://localhost:8080\",\n  \"authentication\": \"Token required via Authorization header for task operations\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Send Message (No Auth)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"message\": \"Hello! Can you help me manage my tasks?\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/agent/message",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"agent",
+								"message"
+							]
+						},
+						"description": "Send a message to the AI agent without authentication. The agent can respond to general questions but cannot perform task operations without a token."
+					},
+					"response": []
+				},
+				{
+					"name": "Send Message (With Auth)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"message\": \"Show me all my tasks\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/agent/message",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"agent",
+								"message"
+							]
+						},
+						"description": "Send a message to the AI agent with authentication. The agent can perform task operations using the provided token. Token is automatically set from the 'auth_token' variable (login first)."
+					},
+					"response": [
+						{
+							"name": "Success - List Tasks",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{auth_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"message\": \"Show me all my tasks\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/agent/message",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"agent",
+										"message"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"response\": \"I found 3 tasks for you:\\n\\n1. Morning workout - ACTION category, starts at 6:00 AM\\n2. Team meeting - ANCHOR category, starts at 2:00 PM\\n3. Complete documentation - ACTION category, not scheduled yet\",\n  \"tool_calls\": [\n    {\n      \"name\": \"get_all_tasks\",\n      \"arguments\": {}\n    }\n  ]\n}"
+						}
+					]
+				},
+				{
+					"name": "Create Task",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"message\": \"Create a task called 'Morning workout' in ACTION category for Health, starting at 6 AM for 45 minutes\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/agent/message",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"agent",
+								"message"
+							]
+						},
+						"description": "Create a new task using natural language. The AI will parse the message and call the create_task tool."
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Tasks",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"message\": \"Show me all my tasks\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/agent/message",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"agent",
+								"message"
+							]
+						},
+						"description": "List all tasks for the authenticated user."
+					},
+					"response": []
+				},
+				{
+					"name": "Filter Tasks",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"message\": \"Show me all CREATED tasks in the Work category\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/agent/message",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"agent",
+								"message"
+							]
+						},
+						"description": "Filter tasks by status, category, or other criteria using natural language."
+					},
+					"response": []
+				},
+				{
+					"name": "Update Task",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"message\": \"Mark task 550e8400-e29b-41d4-a716-446655440000 as COMPLETED with actual duration of 40 minutes\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/agent/message",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"agent",
+								"message"
+							]
+						},
+						"description": "Update a task's status, duration, or other fields. Replace the task ID with an actual task ID from your system."
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Task",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"message\": \"Delete task 550e8400-e29b-41d4-a716-446655440000\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/agent/message",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"agent",
+								"message"
+							]
+						},
+						"description": "Delete a task by ID. Replace with an actual task ID."
+					},
+					"response": []
+				},
+				{
+					"name": "Check Nudge API Health",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"message\": \"Check if the Nudge API is healthy\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/agent/message",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"agent",
+								"message"
+							]
+						},
+						"description": "Ask the AI to check the Nudge API health status."
+					},
+					"response": []
+				},
+				{
+					"name": "Reset Conversation",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/agent/reset",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"agent",
+								"reset"
+							]
+						},
+						"description": "Clear the conversation history. Useful when starting a new conversation or if context gets too long."
+					},
+					"response": [
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/agent/reset",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"agent",
+										"reset"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"message\": \"Conversation reset successfully\"\n}"
+						}
+					]
+				}
+			],
+			"description": "AI Agent endpoints for sending messages and managing conversations. Most operations require authentication via Bearer token."
+		},
+		{
+			"name": "Example Workflows",
+			"item": [
+				{
+					"name": "Complete Workflow Example",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/health",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"health"
+							]
+						},
+						"description": "# Complete Workflow\n\n1. **Login to Nudge API** (in 'External Auth' folder)\n   - Token is automatically saved to `auth_token` variable\n\n2. **Check Agent Status**\n   - See available tools and configuration\n\n3. **Send Messages**\n   - Create tasks\n   - List tasks\n   - Filter tasks\n   - Update tasks\n   - Delete tasks\n\n4. **Reset Conversation** (optional)\n   - Clear history when needed\n\n## Natural Language Examples\n\n- \"Create a task called 'Team meeting' at 2 PM for 60 minutes\"\n- \"Show me all my tasks\"\n- \"Find all CREATED tasks in the Work category\"\n- \"Mark task <id> as COMPLETED\"\n- \"Delete task <id>\"\n- \"Search for tasks containing 'documentation'\"\n\n## Task Categories\n- ACTION - Active tasks\n- ANCHOR - Fixed schedule items\n- TRANSIT - Travel/commute\n\n## Task Statuses\n- CREATED - New task\n- COMPLETED - Finished\n- FAILED - Could not complete\n- DEFERRED - Postponed\n\n## Time Format\nTime in minutes from midnight:\n- 360 = 6:00 AM\n- 540 = 9:00 AM\n- 720 = 12:00 PM\n- 1080 = 6:00 PM"
+					},
+					"response": []
+				}
+			],
+			"description": "Example workflows and documentation for using the AI Agent API."
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8000",
+			"type": "string"
+		},
+		{
+			"key": "nudge_api_url",
+			"value": "http://localhost:8080",
+			"type": "string"
+		},
+		{
+			"key": "auth_token",
+			"value": "",
+			"type": "string"
+		}
+	]
+}

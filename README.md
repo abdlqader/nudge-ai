@@ -12,6 +12,7 @@ A flexible Python module for creating AI agents with multi-model support and too
 - **Conversation Management**: Maintains conversation history with system prompts
 - **Flexible Configuration**: Environment-based config with dotenv
 - **Extensible Architecture**: Plugin-style provider system ([see guide](ai_agent/providers/README.md))
+- **Nudge API Integration**: Pre-built tools for task management API ([see Nudge tools](tools/README_NUDGE.md))
 
 📘 **[View Documentation](docs/README.md)** - Complete guides and architecture details
 
@@ -40,20 +41,22 @@ cp .env.example .env
 MODEL_PROVIDER=gemini    # or 'qwen'
 MODEL_NAME=gemini-pro    # or 'qwen-turbo', etc.
 API_KEY=your-api-key-here
+NUDGE_API_BASE_URL=http://localhost:8080  # For Nudge API integration
+PORT=8000  # For FastAPI server
 ```
 
-3. Test the configuration (without making API calls):
+3. Run the FastAPI server (recommended for production use):
 ```bash
-pipenv run python test_config.py
+pipenv run python api.py
+# Or with uvicorn:
+pipenv run uvicorn api:app --reload --port 8000
 ```
 
-4. Run your main application:
+The API will be available at `http://localhost:8000` with interactive docs at `http://localhost:8000/docs`
+
+4. Or run standalone examples:
 ```bash
 pipenv run python main.py
-```
-
-Or run an example:
-```bash
 pipenv run python examples/simple_example.py
 ```
 
@@ -234,6 +237,99 @@ QwenProvider(
 ```
 
 **Local Deployment**: When running Qwen on your local network, set `QWEN_BASE_URL` in your `.env` file. API key is optional for local setups.
+
+## Nudge API Integration
+
+The AI agent includes a FastAPI server and pre-built tools for interacting with the Nudge task management API.
+
+📖 **[FastAPI Documentation](API_DOCUMENTATION.md)** - Complete API reference  
+🔐 **[Authentication Guide](AUTHENTICATION.md)** - External auth flow explained  
+📮 **[Postman Collection](NudgeAI.postman_collection.json)** - [Quick Guide](POSTMAN.md) | [Full Guide](docs/POSTMAN_GUIDE.md)
+
+### Authentication Flow
+
+1. **Login to Nudge API** (external): Get JWT token from `http://localhost:8080/auth/login`
+2. **Pass token to AI Agent**: Include `Authorization: Bearer <token>` header in requests
+3. **AI uses token**: Tools automatically use the token to call Nudge API
+
+**Key Feature**: Per-request authentication - no server-side session storage
+
+### FastAPI Server (Recommended)
+
+Start the REST API server to interact with the AI agent via HTTP endpoints:
+
+```bash
+pipenv run python api.py
+# Server runs on http://localhost:8000
+# Interactive docs at http://localhost:8000/docs
+```
+
+**Available Endpoints:**
+- `POST /agent/message` - Send message to AI (requires Authorization header with token)
+- `GET /agent/status` - Check agent and tool status
+- `POST /agent/reset` - Reset conversation
+
+**Authentication**: Login via Nudge API, pass token in Authorization header.
+
+**Example Usage:**
+```bash
+# Login
+curl -X to Nudge API (external)
+TOKEN=$(curl -s -X POST http://localhost:8080/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email": "admin@mk.com", "password": "Testing123"}' \
+  | jq -r '.token')
+
+# Send message to AI with token
+curl -X POST http://localhost:8000/agent/message \
+  -H "Authorization: Bearer $TOKEN"
+  -d '{"message": "Show me all my tasks"}'
+```
+
+### Python SDK Usage
+
+Alternatively, use the agent directly in Python:
+
+```python
+from ai_agent import AIAgent
+from config import get_provider
+from tools.nudge_api import nudge_registry
+
+provider = get_provider()
+agent = AIAgent(
+    model_provider=provider,
+    system_prompt="You are a Nudge task management assistant.",
+    tools=nudge_registry.get_tool_definitions(),
+    tool_functions=nudge_registry.get_tool_functions()
+)
+
+# Natural language commands (authentication is handled by FastAPI endpoints)
+agent.run("Create a task called 'Morning workout' starting at 6 AM")
+agent.run("Show me all my tasks")
+```
+
+### Available Tools
+
+- **Task Management**: `create_task`, `get_all_tasks`, `get_task_by_id`, `update_task`, `delete_task`, `health_check`
+
+**Note**: Authentication is handled by the FastAPI endpoints (`/auth/login`, `/auth/register`). The token is automatically used by the tools.
+
+### Configuration
+
+Add to your `.env`:
+```bash
+NUDGE_API_BASE_URL=http://localhost:8080
+```
+
+### Run Examples
+
+```bash
+# Interactive Nudge API assistant
+pipenv run python examples/example_nudge_api.py
+
+# Or use main.py (already configured for Nudge API)
+pipenv run python main.py
+```
 
 ## Advanced Usage
 

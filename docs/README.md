@@ -15,6 +15,31 @@ This folder contains detailed documentation for the AI Agent project.
   - First steps
   - Common issues
 
+- **[QUICKSTART_API.md](QUICKSTART_API.md)** - FastAPI server quick start
+  - Starting the server
+  - Quick tests with cURL
+  - Environment configuration
+  - Troubleshooting
+
+### API & Integration
+- **[API_DOCUMENTATION.md](API_DOCUMENTATION.md)** - Complete FastAPI reference
+  - All endpoints
+  - Request/response formats
+  - Authentication flow
+  - Usage examples
+
+- **[AUTHENTICATION.md](AUTHENTICATION.md)** - External authentication guide
+  - Auth flow diagram
+  - Per-request tokens
+  - Implementation details
+  - Security considerations
+
+- **[POSTMAN_GUIDE.md](POSTMAN_GUIDE.md)** - Using the Postman collection
+  - Import instructions
+  - Collection structure
+  - Example requests
+  - Tips & tricks
+
 ### Architecture & Design
 - **[ARCHITECTURE.md](ARCHITECTURE.md)** - System architecture and design principles
   - Core components
@@ -61,6 +86,9 @@ Additional documentation exists in component folders:
 For...                          See...
 ─────────────────────────────────────────────────────────────
 Getting started quickly         QUICKSTART.md
+Using FastAPI server           QUICKSTART_API.md, API_DOCUMENTATION.md
+Testing with Postman           POSTMAN_GUIDE.md, ../NudgeAI.postman_collection.json
+Understanding auth flow         AUTHENTICATION.md
 Understanding architecture      ARCHITECTURE.md
 Project structure overview      STRUCTURE.md or PROJECT_ORGANIZATION.md
 Adding tools                    ../tools/README.md

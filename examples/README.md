@@ -21,6 +21,12 @@ pipenv run python examples/example_usage.py
 
 # Custom provider implementation
 pipenv run python examples/example_custom_provider.py
+
+# Nudge API integration (direct Python)
+pipenv run python examples/example_nudge_api.py
+
+# REST API client (requires FastAPI server running)
+pipenv run python examples/example_client.py
 ```
 
 ## Example Files
@@ -48,6 +54,29 @@ pipenv run python examples/example_custom_provider.py
 
 - Shows `@registry.tool()` decorator
 - Demonstrates tool execution testing
+
+**Use when:** Understanding decorator-based tool registration.
+
+### [example_nudge_api.py](example_nudge_api.py)
+**Purpose:** Direct Python integration with Nudge API
+
+- Shows all 6 Nudge API tools
+- Interactive conversation mode
+- Task management through natural language
+
+**Use when:** Using the agent directly in Python code.
+
+### [example_client.py](example_client.py)
+**Purpose:** REST API client for FastAPI server
+
+- HTTP-based interaction with AI agent
+- Login/logout flow
+- Message sending via API endpoints
+- Interactive chat mode
+
+**Requirements:** FastAPI server must be running (`pipenv run python api.py`)
+
+**Use when:** Building web/mobile apps or microservices.
 - Multiple tool definitions
 
 **Use when:** Creating custom tools with clean syntax.
