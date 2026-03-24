@@ -5,7 +5,7 @@ This is your main implementation file. The examples have been moved to the examp
 """
 
 from ai_agent import AIAgent
-from config import get_provider
+from config import get_provider, SYSTEM_PROMPT
 from tools.nudge_api import nudge_registry
 
 
@@ -22,22 +22,7 @@ def main():
     # Create agent with Nudge API tools
     agent = AIAgent(
         model_provider=provider,
-        system_prompt="""You are an AI assistant for the Nudge task management system. 
-You can help users manage their tasks, authenticate, and interact with the Nudge API.
-
-Available capabilities:
-- User authentication (register, login)
-- Task management (create, read, update, delete tasks)
-- Task filtering and searching
-- Health checks
-
-Important notes:
-- Users must login before performing task operations
-- Task categories: ACTION, ANCHOR, TRANSIT
-- Task statuses: CREATED, COMPLETED, FAILED, DEFERRED
-- Times are in minutes from midnight (e.g., 540 = 9:00 AM)
-
-Always be helpful and guide users through the API interactions.""",
+        system_prompt=SYSTEM_PROMPT,
         tools=registry.get_tool_definitions(),
         tool_functions=registry.get_tool_functions()
     )

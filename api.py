@@ -13,7 +13,7 @@ import os
 from dotenv import load_dotenv
 
 from ai_agent import AIAgent
-from config import get_provider
+from config import get_provider, SYSTEM_PROMPT
 from tools.nudge_api import nudge_registry, set_auth_token, clear_auth_token, get_auth_status
 
 # Load environment variables
@@ -46,19 +46,7 @@ def get_agent() -> AIAgent:
         provider = get_provider()
         _agent = AIAgent(
             model_provider=provider,
-            system_prompt="""You are an AI assistant for the Nudge task management system. 
-You can help users manage their tasks and interact with the Nudge API.
-
-Available capabilities:
-- Task management (create, read, update, delete tasks)
-- Task filtering and searchin
-
-Important notes:
-- Task categories: ACTION, ANCHOR, TRANSIT
-- Task statuses: CREATED, COMPLETED, FAILED, DEFERRED
-- Times are in minutes from midnight (e.g., 540 = 9:00 AM) in integer format
-
-Always be helpful and guide users through their task management needs.""",
+            system_prompt=SYSTEM_PROMPT,
             tools=nudge_registry.get_tool_definitions(),
             tool_functions=nudge_registry.get_tool_functions()
         )
