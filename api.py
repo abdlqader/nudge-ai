@@ -94,15 +94,17 @@ async def send_message(
     authorization: Optional[str] = Header(None, description="Bearer token from Nudge API")
 ):
     """
-    Send a message to the AI agent
+    Send a message to the AI agent (STATELESS - token required per request)
     
     The AI agent will process the message and may call Nudge API tools
     to complete task management operations.
     
-    Authentication:
-    - Provide JWT token via Authorization header: "Bearer <token>"
-    - The token will be used by the agent's tools to call Nudge API
-    - Token is required for task operations (create, update, delete, list tasks)
+    STATELESS AUTHENTICATION:
+    - Provide JWT token via Authorization header with EVERY request: "Bearer <token>"
+    - The token is request-scoped and thread-safe (using contextvars)
+    - No session state is maintained between requests
+    - Token is automatically cleared after each request completes
+    - Each request is completely independent
     
     Example:
         curl -X POST http://localhost:8000/agent/message \
@@ -120,7 +122,7 @@ async def send_message(
             # If Authorization header doesn't follow Bearer format, use as-is
             token = authorization
     
-    # Set token for this request
+    # Set token for this request (request-scoped, thread-safe)
     if token:
         set_auth_token(token)
     

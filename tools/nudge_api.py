@@ -6,11 +6,12 @@ Based on the Postman collection for authentication and task management
 import os
 import requests
 from typing import Optional, Dict, Any
+from contextvars import ContextVar
 from tools import ToolRegistry
 
 
-# Global variable to store auth token (in production, use proper session management)
-_auth_token: Optional[str] = None
+# Context variable for thread-safe, request-scoped auth token
+_auth_token: ContextVar[Optional[str]] = ContextVar('auth_token', default=None)
 
 
 def _get_base_url() -> str:
@@ -21,8 +22,10 @@ def _get_base_url() -> str:
 def _get_headers(include_auth: bool = False) -> Dict[str, str]:
     """Get request headers, optionally including auth token"""
     headers = {"Content-Type": "application/json"}
-    if include_auth and _auth_token:
-        headers["Authorization"] = f"Bearer {_auth_token}"
+    if include_auth:
+        token = _auth_token.get()
+        if token:
+            headers["Authorization"] = f"Bearer {token}"
     return headers
 
 
@@ -271,24 +274,23 @@ def get_auth_status() -> dict:
     Returns:
         dict: Authentication status information
     """
+    token = _auth_token.get()
     return {
-        "authenticated": _auth_token is not None,
-        "token_present": bool(_auth_token)
+        "authenticated": token is not None,
+        "token_present": bool(token)
     }
 
 
 def set_auth_token(token: str) -> None:
     """
-    Set the authentication token for API calls
+    Set the authentication token for API calls (request-scoped, thread-safe)
     
     Args:
         token: JWT token string
     """
-    global _auth_token
-    _auth_token = token
+    _auth_token.set(token)
 
 
 def clear_auth_token() -> None:
-    """Clear the stored authentication token"""
-    global _auth_token
-    _auth_token = None
+    """Clear the stored authentication token (request-scoped, thread-safe)"""
+    _auth_token.set(None)
